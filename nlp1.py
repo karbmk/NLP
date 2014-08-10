@@ -1,11 +1,25 @@
 import ply.lex as lex
+from ply.lex import LexError
 import sys
 import re
 f=open("Dataset15.txt","r")
-
-tokens = {
-'NUMBER','SNAME','RT','HASHTAG','URL','SLANG','WORD','SINGLEQUOTE','DOUBLEQOUTE','EXCLAMATION','QUESTION','EMOTICON','PUNCTUATION','PERIOD'
-}
+k=f.readline()
+tokens = (
+'NUMBER',
+'SNAME',
+'RT',
+'HASHTAG',
+'URL',
+'SLANG',
+'WORD',
+'SINGLEQUOTE',
+'DOUBLEQOUTE',
+'EXCLAMATION',
+'QUESTION',
+'EMOTICON',
+'PUNCTUATION',
+'PERIOD',
+)
 cHASH,cNUM,cNAM,cSING,cDOUB,cWORD,cPUNC,cEXCL,cSLAN,cEMOT,cPER,cRT,cURL,cQUES=0,0,0,0,0,0,0,0,0,0,0,0,0,0
 def t_SINGLEQUOTE(t):
 	r'\''
@@ -38,7 +52,7 @@ def t_SNAME(t):
 	r'\@.+'
 	cNAM+=1
 def t_URL(t):
-	r'^http://(w+\.)+'
+	r'^(http|https|ftp)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*$'
 	cURL+=1
 def t_RT(t):
 	r'\#.'
@@ -49,11 +63,15 @@ def t_SLANG(t):
 def t_EMOTICON(t):
 	r'[":)",":(",":p",":D",":O",";)","B)",":*","3:)","O:)"]'
 	cEMOT+=1
+def t_error(t):
+    print("Illegal character '%s'" % t.value[0])
 
 print "Hashtags=%d \n number=%d \n Sname=%d \n singlequote=%d \n doublequote=%d \n word=%d \n punctuation=%d \n exclamation=%d \n slang=%d \n emoticon=%d \n \
 period=%d \n RT=%d \n URL=%d \n Question=%d "%(cHASH,cNUM,cNAM,cSING,cDOUB,cWORD,cPUNC,cEXCL,cSLAN,cEMOT,cPER,cRT,cURL,cQUES)	
 	
-lexer=lex.lex()
+lexer = lex.lex()
 lexer.input(f)
-for t in lexer:
-    pass
+while True:
+    tok = lexer.token()
+    if not tok: break      # No more input
+    print tok
